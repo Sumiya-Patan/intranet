@@ -1,10 +1,11 @@
-package com.example.usermanagement.controller;
+package user_management.user_management.controller;
 
-import com.example.usermanagement.entity.Role;
-import com.example.usermanagement.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import user_management.user_management.entity.Role;
+import user_management.user_management.service.RoleService;
 
 import java.util.List;
 
