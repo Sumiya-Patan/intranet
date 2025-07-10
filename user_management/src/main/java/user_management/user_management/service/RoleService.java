@@ -1,9 +1,10 @@
-package com.example.usermanagement.service;
+package user_management.user_management.service;
 
-import com.example.usermanagement.entity.Role;
-import com.example.usermanagement.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import user_management.user_management.entity.Role;
+import user_management.user_management.repository.RoleRepository;
 
 import java.util.List;
 import java.util.Optional;
