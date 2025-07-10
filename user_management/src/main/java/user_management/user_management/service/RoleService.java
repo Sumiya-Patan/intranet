@@ -4,11 +4,16 @@ package user_management.user_management.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import user_management.user_management.entity.Permission;
 import user_management.user_management.entity.Role;
+import user_management.user_management.repository.PermissionRepository;
 import user_management.user_management.repository.RoleRepository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class RoleService {
@@ -16,6 +21,9 @@ public class RoleService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private PermissionRepository permissionRepository;
+    
     public Role createRole(Role role) {
         return roleRepository.save(role);
     }
@@ -42,5 +50,19 @@ public class RoleService {
 
     public void deleteRole(Long id) {
         roleRepository.deleteById(id);
+    }
+
+    public Role assignPermissionsToRole(Long roleId, Set<UUID> permissionIds) {
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Role not found with ID: " + roleId));
+
+        Set<Permission> permissions = new HashSet<>(permissionRepository.findAllById(permissionIds));
+
+        if (permissions.isEmpty()) {
+            throw new RuntimeException("No valid permissions found for given IDs.");
+        }
+
+        role.getPermissions().addAll(permissions); // merge with existing permissions
+        return roleRepository.save(role);
     }
 }

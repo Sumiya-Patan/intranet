@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -16,6 +17,9 @@ public class Permission {
     @GeneratedValue
     @Column(name = "permission_id", columnDefinition = "BINARY(16)")
     private UUID permissionId;
+
+    @ManyToMany(mappedBy = "permissions")
+    private Set<Role> roles;
 
     @Column(nullable = false, unique = true)
     private String name;
