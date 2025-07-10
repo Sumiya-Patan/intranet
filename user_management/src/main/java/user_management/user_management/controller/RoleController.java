@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/roles")
@@ -43,5 +45,13 @@ public class RoleController {
     public ResponseEntity<Void> deleteRole(@PathVariable Long id) {
         roleService.deleteRole(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{roleId}/assign-permissions")
+    public ResponseEntity<Role> assignPermissionsToRole(
+            @PathVariable Long roleId,
+            @RequestBody Set<UUID> permissionIds) {
+        Role updatedRole = roleService.assignPermissionsToRole(roleId, permissionIds);
+        return ResponseEntity.ok(updatedRole);
     }
 }
