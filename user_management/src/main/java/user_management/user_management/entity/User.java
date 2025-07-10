@@ -37,6 +37,7 @@ public class User {
 
     private String phoneNumber; // Optional field
 
+    @Builder.Default
     private boolean active = true;
 
     private String createdAt;
