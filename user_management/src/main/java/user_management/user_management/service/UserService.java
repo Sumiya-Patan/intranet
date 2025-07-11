@@ -70,4 +70,16 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+    public User authenticate(String email, String password) {
+        
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            if (user.getPassword().equals(password)) {
+                return user; // Authentication successful
+            }
+        }
+        return null; // Authentication failed
+    }
 }
