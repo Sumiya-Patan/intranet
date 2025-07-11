@@ -3,6 +3,7 @@ package user_management.user_management.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import user_management.user_management.dto.UserDTO;
 import user_management.user_management.entity.Role;
 import user_management.user_management.entity.User;
 import user_management.user_management.repository.RoleRepository;
@@ -13,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -29,8 +31,15 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream().map(user -> {
+        UserDTO dto = new UserDTO();
+        dto.setUserId(user.getUserId());
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+        dto.setRoles(user.getRoles().stream().map(Role::getName).collect(Collectors.toSet()));
+        return dto;
+    }).collect(Collectors.toList());
     }
 
     public Optional<User> getUserById(Long id) {

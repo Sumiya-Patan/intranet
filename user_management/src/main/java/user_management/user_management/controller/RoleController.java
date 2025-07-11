@@ -1,5 +1,6 @@
 package user_management.user_management.controller;
 
+import user_management.user_management.dto.RoleDTO;
 import user_management.user_management.entity.Role;
 import user_management.user_management.service.RoleService;
 
@@ -25,7 +26,7 @@ public class RoleController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Role>> getAllRoles() {
+    public ResponseEntity<List<RoleDTO>> getAllRoles() {
         return ResponseEntity.ok(roleService.getAllRoles());
     }
 

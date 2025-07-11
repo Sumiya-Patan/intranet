@@ -1,9 +1,10 @@
 package user_management.user_management.service;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import user_management.user_management.dto.RoleDTO;
+import user_management.user_management.dto.UserSummaryDTO;
 import user_management.user_management.entity.Permission;
 import user_management.user_management.entity.Role;
 import user_management.user_management.repository.PermissionRepository;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class RoleService {
@@ -23,13 +25,34 @@ public class RoleService {
 
     @Autowired
     private PermissionRepository permissionRepository;
-    
+
     public Role createRole(Role role) {
         return roleRepository.save(role);
     }
 
-    public List<Role> getAllRoles() {
-        return roleRepository.findAll();
+    public List<RoleDTO> getAllRoles() {
+        return roleRepository.findAll().stream().map(role -> {
+            RoleDTO dto = new RoleDTO();
+            dto.setId(role.getId());
+            dto.setName(role.getName());
+            dto.setDescription(role.getDescription());
+
+            dto.setPermissions(
+                    role.getPermissions().stream()
+                            .map(Permission::getName)
+                            .collect(Collectors.toSet()));
+
+            dto.setUsers(
+                    role.getUsers().stream().map(user -> {
+                        UserSummaryDTO u = new UserSummaryDTO();
+                        u.setUserId(user.getUserId());
+                        u.setUsername(user.getUsername());
+                        u.setEmail(user.getEmail());
+                        return u;
+                    }).collect(Collectors.toSet()));
+
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     public Optional<Role> getRoleById(Long id) {
