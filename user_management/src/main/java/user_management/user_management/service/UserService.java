@@ -1,6 +1,7 @@
 package user_management.user_management.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import user_management.user_management.entity.Role;
@@ -23,12 +24,26 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public void registerUser(User user) {
+        // Encode password before saving
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+    }
+    public User updateUserPassword(Long userId, String newPassword) {
+        return userRepository.findById(userId).map(user -> {
+            user.setPassword(passwordEncoder.encode(newPassword));
+            user.setUpdatedAt(LocalDateTime.now().toString());
+            return userRepository.save(user);
+        }).orElseThrow(() -> new RuntimeException("User not found"));
+    }
     public User createUser(User user) {
         user.setCreatedAt(LocalDateTime.now().toString());
         user.setUpdatedAt(LocalDateTime.now().toString());
         return userRepository.save(user);
     }
-
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -37,8 +52,8 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public Optional<User> getUserByUsername(String name) {
+        return userRepository.findByUsername(name);
     }
 
     public User updateUser(Long id, User updatedUser) {
@@ -71,15 +86,24 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User authenticate(String email, String password) {
-        
-        Optional<User> userOpt = userRepository.findByEmail(email);
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            if (user.getPassword().equals(password)) {
-                return user; // Authentication successful
-            }
+   
+    public User removeRolesFromUser(Long userId, Set<Long> roleIds) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+
+        Set<Role> rolesToRemove = new HashSet<>(roleRepository.findAllById(roleIds));
+
+        if (rolesToRemove.isEmpty()) {
+            throw new RuntimeException("No valid roles found for given IDs.");
         }
-        return null; // Authentication failed
+
+        user.getRoles().removeAll(rolesToRemove); // remove specified roles
+        user.setUpdatedAt(LocalDateTime.now().toString());
+
+        return userRepository.save(user);
     }
+    public User authenticate(String email, String password) {
+        throw new UnsupportedOperationException("Unimplemented method 'authenticate'");
+    }
+
 }
