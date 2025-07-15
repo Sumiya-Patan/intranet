@@ -1,6 +1,7 @@
 package user_management.user_management.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import user_management.user_management.entity.Permission;
@@ -15,7 +16,14 @@ public class PermissionService {
     @Autowired
     private PermissionRepository permissionRepository;
 
+    @Cacheable(value = "permissions")
     public List<Permission> getAllPermissions() {
+        // simulating a delay to demonstrate caching
+        try {
+            Thread.sleep(2000); // Simulate a delay of 2 seconds
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         return permissionRepository.findAll();
     }
 
@@ -34,5 +42,5 @@ public class PermissionService {
     public Permission getByName(String name) {
         return permissionRepository.findByName(name).orElse(null);
     }
-}
 
+}

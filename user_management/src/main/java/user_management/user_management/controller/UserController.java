@@ -23,6 +23,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
         return ResponseEntity.ok(userService.createUser(user));
+        
     }
 
     @GetMapping
@@ -55,4 +56,6 @@ public class UserController {
         User updatedUser = userService.assignRolesToUser(userId, roleIds);
         return ResponseEntity.ok(updatedUser);
     }
+
+
 }
