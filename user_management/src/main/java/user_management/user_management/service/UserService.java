@@ -1,6 +1,7 @@
 package user_management.user_management.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import user_management.user_management.dto.UserDTO;
@@ -51,11 +52,13 @@ public class UserService {
     }
 
     public User updateUser(Long id, User updatedUser) {
+        // update incoming details if present
+        // otherwise keep existing values
         return userRepository.findById(id).map(user -> {
-            user.setUsername(updatedUser.getUsername());
-            user.setEmail(updatedUser.getEmail());
-            user.setPhoneNumber(updatedUser.getPhoneNumber());
-            user.setUpdatedAt(LocalDateTime.now().toString());
+            user.setUsername(updatedUser.getUsername() != null ? updatedUser.getUsername() : user.getUsername());
+            user.setEmail(updatedUser.getEmail() != null ? updatedUser.getEmail() : user.getEmail());
+            user.setPhoneNumber(updatedUser.getPhoneNumber() != null ? updatedUser.getPhoneNumber() : user.getPhoneNumber());
+            user.setUpdatedAt(LocalDateTime.now().toString() != null ? LocalDateTime.now().toString() : user.getUpdatedAt());
             return userRepository.save(user);
         }).orElseThrow(() -> new RuntimeException("User not found"));
     }
@@ -64,6 +67,7 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    @CacheEvict(value = "permissions")
     public User assignRolesToUser(Long userId, Set<Long> roleIds) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));

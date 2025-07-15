@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import user_management.user_management.entity.Permission;
 import user_management.user_management.repository.PermissionRepository;
+import user_management.user_management.repository.RoleRepository;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,6 +16,9 @@ public class PermissionService {
 
     @Autowired
     private PermissionRepository permissionRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Cacheable(value = "permissions")
     public List<Permission> getAllPermissions() {
@@ -41,6 +45,16 @@ public class PermissionService {
 
     public Permission getByName(String name) {
         return permissionRepository.findByName(name).orElse(null);
+    }
+
+    
+    public Permission assignPermissionToRole(Long roleId, UUID permissionId) {
+        Permission permission = getPermissionById(permissionId);
+        if (permission != null) {
+            permission.getRoles().add(roleRepository.findById(roleId).orElse(null));
+            return permissionRepository.save(permission);
+        }
+        return null;
     }
 
 }
