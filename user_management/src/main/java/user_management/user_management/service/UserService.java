@@ -1,6 +1,7 @@
 package user_management.user_management.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import user_management.user_management.dto.UserDTO;
@@ -25,21 +26,26 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public User createUser(User user) {
         user.setCreatedAt(LocalDateTime.now().toString());
         user.setUpdatedAt(LocalDateTime.now().toString());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));   // ② hash
+
         return userRepository.save(user);
     }
 
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream().map(user -> {
-        UserDTO dto = new UserDTO();
-        dto.setUserId(user.getUserId());
-        dto.setUsername(user.getUsername());
-        dto.setEmail(user.getEmail());
-        dto.setRoles(user.getRoles().stream().map(Role::getName).collect(Collectors.toSet()));
-        return dto;
-    }).collect(Collectors.toList());
+            UserDTO dto = new UserDTO();
+            dto.setUserId(user.getUserId());
+            dto.setUsername(user.getUsername());
+            dto.setEmail(user.getEmail());
+            dto.setRoles(user.getRoles().stream().map(Role::getName).collect(Collectors.toSet()));
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     public Optional<User> getUserById(Long id) {
