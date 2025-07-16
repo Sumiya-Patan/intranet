@@ -41,7 +41,7 @@ public class UserController {
                 value = """
                     {
                       "email": "johndoe@example.com",
-                      "password": "SecurePass123",
+                      "password": "password",
                       "username": "johndoe"
                     }
                 """
