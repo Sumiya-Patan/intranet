@@ -1,6 +1,5 @@
 package user_management.user_management.repository;
 
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
