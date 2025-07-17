@@ -14,6 +14,9 @@ import user_management.user_management.dto.UserDTO;
 import user_management.user_management.entity.User;
 import user_management.user_management.service.UserService;
 
+
+
+
 import java.util.List;
 import java.util.Set;
 
@@ -53,7 +56,7 @@ public class UserController {
         
     }
 
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('admin')")
     @Operation(summary = "All users list",
            security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping
@@ -61,17 +64,33 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    @PreAuthorize("@securityService.canAccessUser(#id)")
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return userService.getUserById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    return userService.getUserById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("@securityService.canAccessUser(#id)")
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
         return ResponseEntity.ok(userService.updateUser(id, user));
     }
+
+
+
+    // @GetMapping("/{id}")
+    // public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    //     return userService.getUserById(id)
+    //             .map(ResponseEntity::ok)
+    //             .orElse(ResponseEntity.notFound().build());
+    // }
+
+    // @PutMapping("/{id}")
+    // public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+    //     return ResponseEntity.ok(userService.updateUser(id, user));
+    // }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
